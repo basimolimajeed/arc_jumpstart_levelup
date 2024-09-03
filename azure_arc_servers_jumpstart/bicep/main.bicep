@@ -17,16 +17,16 @@ param vmAutologon bool = true
 param logAnalyticsWorkspaceName string
 
 @description('Target GitHub account')
-param githubAccount string = 'Azure'
+param githubAccount string = 'basimolimajeed'
 
 @description('Target GitHub branch')
-param githubBranch string = 'main'
+param githubBranch string = 'arcbox_3.0'
 
 @description('Choice to deploy Bastion to connect to the client VM')
 param deployBastion bool = false
 
 @description('User github account where they have forked https://github.com/microsoft/azure-arc-jumpstart-apps')
-param githubUser string = 'microsoft'
+param githubUser string = 'basimolimajeed'
 
 @description('Override default RDP port 3389 using this parameter. Default is 3389. No changes will be made to the client VM.')
 param rdpPort string = '3389'
@@ -39,8 +39,8 @@ param emailAddress string
 
 param location string = resourceGroup().location
 
-@description('Option to deploy Arc-enabled SQL scenarios.')
-param deploySQL bool = false
+//@description('Option to deploy Arc-enabled SQL scenarios.')
+//param deploySQL bool = false
 
 var templateBaseUrl = 'https://raw.githubusercontent.com/${githubAccount}/arc_jumpstart_levelup/${githubBranch}/azure_arc_servers_jumpstart/'
 
@@ -59,7 +59,6 @@ module clientVmDeployment 'clientVm/clientVm.bicep' = {
     location: location
     rdpPort: rdpPort
     sshPort: sshPort
-    deploySQL: deploySQL
     vmAutologon: vmAutologon
     changeTrackingDCR: dataCollectionRules.outputs.changeTrackingDCR
     vmInsightsDCR: dataCollectionRules.outputs.vmInsightsDCR
