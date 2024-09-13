@@ -20,7 +20,7 @@ param logAnalyticsWorkspaceName string
 param githubAccount string = 'basimolimajeed'
 
 @description('Target GitHub branch')
-param githubBranch string = 'arcbox_3.0'
+param githubBranch string = 'arcbox3.0'
 
 @description('Choice to deploy Bastion to connect to the client VM')
 param deployBastion bool = false
