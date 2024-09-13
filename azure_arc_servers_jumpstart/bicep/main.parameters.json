@@ -3,19 +3,19 @@
     "contentVersion": "1.0.0.0",
     "parameters": {
         "spnTenantId": {
-            "value": "16b3c013-d300-468d-ac64-7eda0820b6d3"
+            "value": ""
         },
         "windowsAdminUsername": {
-            "value": "arcdemo"
+            "value": ""
         },
         "windowsAdminPassword": {
-            "value": "Olivia@12345"
+            "value": ""
         },
         "logAnalyticsWorkspaceName": {
             "value": "arcbox3-test"
         },
         "emailAddress": {
-            "value": "basim.majeed@microsoft.com"
+            "value": ""
         }
         
     }
