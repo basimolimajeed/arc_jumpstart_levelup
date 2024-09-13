@@ -241,10 +241,10 @@ Enable-WindowsOptionalFeature -Online -FeatureName VirtualMachinePlatform -NoRes
 Install-WindowsFeature -Name Hyper-V -IncludeAllSubFeature -IncludeManagementTools -Restart
 
  # Clean up Bootstrap.log
- Write-Host "Clean up Bootstrap.log"
- Stop-Transcript
- $logSuppress = Get-Content $Env:ArcBoxLogsDir\Bootstrap.log | Where-Object { $_ -notmatch "Host Application: $ScheduledTaskExecutable" }
- $logSuppress | Set-Content $Env:ArcBoxLogsDir\Bootstrap.log -Force
+# Write-Host "Clean up Bootstrap.log"
+# Stop-Transcript
+# $logSuppress = Get-Content $Env:ArcBoxLogsDir\Bootstrap.log | Where-Object { $_ -notmatch "Host Application: $ScheduledTaskExecutable" }
+# $logSuppress | Set-Content $Env:ArcBoxLogsDir\Bootstrap.log -Force
 
 # Restart computer
 #Restart-Computer
