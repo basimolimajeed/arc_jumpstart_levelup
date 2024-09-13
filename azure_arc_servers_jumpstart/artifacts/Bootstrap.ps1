@@ -1,15 +1,15 @@
 param (
-    [string]$adminUsername="arcdemo",
-    [string]$adminPassword="Olivia@12345",
-    [string]$spnTenantId="16b3c013-d300-468d-ac64-7eda0820b6d3",
+    [string]$adminUsername,
+    [string]$adminPassword,
+    [string]$spnTenantId,
     [string]$spnAuthority,
-    [string]$subscriptionId="c859ab62-95ff-4096-b3e4-0b5404ca1b68",
-    [string]$resourceGroup="ArcBox3-0",
-    #[string]$acceptEula,
-    [string]$azureLocation="uksouth",
-    [string]$stagingStorageAccountName="arcboxbasimstorage123",
-    [string]$workspaceName="myWorkspace",
-    [string]$githubUser="basimolimajeed",
+    [string]$subscriptionId,
+    [string]$resourceGroup,
+    [string]$acceptEula,
+    [string]$azureLocation,
+    [string]$stagingStorageAccountName,
+    [string]$workspaceName,
+    [string]$githubUser,
     [string]$templateBaseUrl,
     [string]$rdpPort,
     [string]$sshPort,
@@ -24,7 +24,7 @@ param (
 [System.Environment]::SetEnvironmentVariable('SPN_TENANT_ID', $spnTenantId, [System.EnvironmentVariableTarget]::Machine)
 [System.Environment]::SetEnvironmentVariable('SPN_AUTHORITY', $spnAuthority, [System.EnvironmentVariableTarget]::Machine)
 [System.Environment]::SetEnvironmentVariable('resourceGroup', $resourceGroup, [System.EnvironmentVariableTarget]::Machine)
-#[System.Environment]::SetEnvironmentVariable('ACCEPT_EULA', $acceptEula, [System.EnvironmentVariableTarget]::Machine)
+[System.Environment]::SetEnvironmentVariable('ACCEPT_EULA', $acceptEula, [System.EnvironmentVariableTarget]::Machine)
 [System.Environment]::SetEnvironmentVariable('subscriptionId', $subscriptionId, [System.EnvironmentVariableTarget]::Machine)
 [System.Environment]::SetEnvironmentVariable('azureLocation', $azureLocation, [System.EnvironmentVariableTarget]::Machine)
 [System.Environment]::SetEnvironmentVariable('stagingStorageAccountName', $stagingStorageAccountName, [System.EnvironmentVariableTarget]::Machine)
