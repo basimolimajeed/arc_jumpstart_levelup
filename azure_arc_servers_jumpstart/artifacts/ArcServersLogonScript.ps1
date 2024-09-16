@@ -224,6 +224,11 @@ Set-AzContext -Subscription $subscriptionId -tenant $spnTenantId
         $nestedLinuxUsername = "jumpstart"
         $nestedLinuxPassword = "JS123!!"
 
+        # Create Windows credential object for 2012
+        $secWindows2k12Password = ConvertTo-SecureString $nestedWindows2k12Password -AsPlainText -Force
+        $win2k12Creds = New-Object System.Management.Automation.PSCredential ($nestedWindows2k12Username, $secWindows2k12Password)
+
+
         # Create Linux credential object
         $secLinuxPassword = ConvertTo-SecureString $nestedLinuxPassword -AsPlainText -Force
         $linCreds = New-Object System.Management.Automation.PSCredential ($nestedLinuxUsername, $secLinuxPassword)
