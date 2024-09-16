@@ -1,4 +1,4 @@
-$ErrorActionPreference = $env:ErrorActionPreference
+#$ErrorActionPreference = $env:ErrorActionPreference
 
 $Env:ArcBoxDir = "C:\ArcBox"
 $Env:ArcBoxLogsDir = "$Env:ArcBoxDir\Logs"
