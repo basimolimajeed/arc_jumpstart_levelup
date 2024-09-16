@@ -57,7 +57,7 @@ properties:
       settings:
         Name: namingPrefixStage-Win2K22
         SwitchName: 'InternalNATSwitch'
-        VhdPath: F:\Virtual Machines\ArcBox-Win2K22.vhdx
+        VhdPath: F:\Virtual Machines\JSWin2K12Base.vhdx
         ProcessorCount: 2
         StartupMemory: '10GB'
         RestartIfNeeded: true

@@ -19,6 +19,7 @@ $namingPrefix = $env:namingPrefix
 
 # Moved VHD storage account details here to keep only in place to prevent duplicates.
 $vhdSourceFolder = "https://jumpstartprodsg.blob.core.windows.net/arcbox/prod/*"
+$vhdSourceFolderESU = "https://jumpstartprodsg.blob.core.windows.net/scenarios/prod/*"
 
 # Archive existing log file and create new one
 $logFilePath = "$Env:ArcBoxLogsDir\ArcServersLogonScript.log"
@@ -106,23 +107,23 @@ if ($netNat.Name -ne $natName) {
 }
 
 # Create an internal switch with NAT
-Write-Host "Creating Internal vSwitch"
-$switchName = 'InternalNATSwitch'
+#Write-Host "Creating Internal vSwitch"
+#$switchName = 'InternalNATSwitch'
 
 # Verify if internal switch is already created, if not create a new switch
-$inernalSwitch = Get-VMSwitch
-if ($inernalSwitch.Name -ne $switchName) {
-    New-VMSwitch -Name $switchName -SwitchType Internal
-    $adapter = Get-NetAdapter | Where-Object { $_.Name -like "*" + $switchName + "*" }
+#$inernalSwitch = Get-VMSwitch
+#if ($inernalSwitch.Name -ne $switchName) {
+#    New-VMSwitch -Name $switchName -SwitchType Internal
+#    $adapter = Get-NetAdapter | Where-Object { $_.Name -like "*" + $switchName + "*" }
 
     # Create an internal network (gateway first)
-    Write-Host "Creating Gateway"
-    New-NetIPAddress -IPAddress 10.10.1.1 -PrefixLength 24 -InterfaceIndex $adapter.ifIndex
+#    Write-Host "Creating Gateway"
+#    New-NetIPAddress -IPAddress 10.10.1.1 -PrefixLength 24 -InterfaceIndex $adapter.ifIndex
 
     # Enable Enhanced Session Mode on Host
-    Write-Host "Enabling Enhanced Session Mode"
-    Set-VMHost -EnableEnhancedSessionMode $true
-}
+#    Write-Host "Enabling Enhanced Session Mode"
+#    Set-VMHost -EnableEnhancedSessionMode $true
+#}
 
 Write-Host "Creating demo VM Credentials"
 # Hard-coded username and password for the nested demo VMs
@@ -130,16 +131,16 @@ $nestedWindowsUsername = "Administrator"
 $nestedWindowsPassword = "JS123!!"
 
 # Hard-coded username and password for the nested demo 2012 VM
-$nestedWindows2k12Username = "Administrator"
-$nestedWindows2k12Password = "JS123!!"
+#$nestedWindows2k12Username = "Administrator"
+#$nestedWindows2k12Password = "JS123!!"
 
 # Create Windows credential object
 $secWindowsPassword = ConvertTo-SecureString $nestedWindowsPassword -AsPlainText -Force
 $winCreds = New-Object System.Management.Automation.PSCredential ($nestedWindowsUsername, $secWindowsPassword)
 
 # Create Windows credential object for 2012
-$secWindows2k12Password = ConvertTo-SecureString $nestedWindows2k12Password -AsPlainText -Force
-$win2k12Creds = New-Object System.Management.Automation.PSCredential ($nestedWindows2k12Username, $secWindows2k12Password)
+#$secWindows2k12Password = ConvertTo-SecureString $nestedWindows2k12Password -AsPlainText -Force
+#$win2k12Creds = New-Object System.Management.Automation.PSCredential ($nestedWindows2k12Username, $secWindows2k12Password)
 
 # Creating Hyper-V Manager desktop shortcut
 Write-Host "Creating Hyper-V Shortcut"
@@ -165,15 +166,23 @@ $Env:AZURE_CONFIG_DIR = $cliDir.FullName
 
 # Install Azure CLI extensions
 Write-Host "Az CLI extensions"
-az extension add --name ssh --yes --only-show-errors
-az extension add --name log-analytics-solution --yes --only-show-errors
-az extension add --name connectedmachine --yes --only-show-errors
-az extension add --name monitor-control-service --yes --only-show-errors
+# az extension add --name ssh --yes --only-show-errors
+# az extension add --name log-analytics-solution --yes --only-show-errors
+# az extension add --name connectedmachine --yes --only-show-errors
+# az extension add --name monitor-control-service --yes --only-show-errors
+
+Write-Header "Az CLI extensions"
+
+    az config set extension.use_dynamic_install=yes_without_prompt --only-show-errors
+
+    @("ssh","log-analytics-solution","connectedmachine", "monitor-control-service") |
+    ForEach-Object -Parallel {
+        az extension add --name $PSItem --yes --only-show-errors
+    }
 
 # Required for CLI commands
 Write-Host "Az CLI Login"
 az login --identity
-
 az account set -s $subscriptionId
 
 # Connect to azure using azure powershell
@@ -210,7 +219,8 @@ Set-AzContext -Subscription $subscriptionId -tenant $spnTenantId
             <# Action when all if and elseif conditions are false #>
             $Env:AZCOPY_BUFFER_GB = 4
             Write-Output "Downloading nested VMs VHDX files. This can take some time, hold tight..."
-            azcopy cp $vhdSourceFolder $Env:ArcBoxVMDir --include-pattern "ArcBox-Win2K19.vhdx;ArcBox-Win2K22.vhdx;ArcBox-Ubuntu-01.vhdx;ArcBox-Ubuntu-02.vhdx;ArcBox-SQL.vhdx;ArcBox-Win2k12.vhdx" --recursive=true --check-length=false --log-level=ERROR
+            azcopy cp $vhdSourceFolder $Env:ArcBoxVMDir --include-pattern "ArcBox-Win2K19.vhdx;ArcBox-Win2K22.vhdx;ArcBox-Ubuntu-01.vhdx;ArcBox-Ubuntu-02.vhdx;ArcBox-SQL.vhdx" --recursive=true --check-length=false --log-level=ERROR
+            azcopy cp $vhdSourceFolderESU $Env:ArcBoxVMDir --include-pattern "${Win2k12vmName}.vhdx;" --recursive=true --check-length=false --log-level=ERROR --check-md5 NoCheck
         }
 
         # Create the nested VMs if not already created
@@ -225,8 +235,8 @@ Set-AzContext -Subscription $subscriptionId -tenant $spnTenantId
         $nestedLinuxPassword = "JS123!!"
 
         # Create Windows credential object for 2012
-        $secWindows2k12Password = ConvertTo-SecureString $nestedWindows2k12Password -AsPlainText -Force
-        $win2k12Creds = New-Object System.Management.Automation.PSCredential ($nestedWindows2k12Username, $secWindows2k12Password)
+        #$secWindows2k12Password = ConvertTo-SecureString $nestedWindows2k12Password -AsPlainText -Force
+        #$win2k12Creds = New-Object System.Management.Automation.PSCredential ($nestedWindows2k12Username, $secWindows2k12Password)
 
 
         # Create Linux credential object
