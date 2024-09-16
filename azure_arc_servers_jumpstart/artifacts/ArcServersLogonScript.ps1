@@ -75,7 +75,113 @@ if (Test-Path $registryPath) {
 ################################################
 # Setup Hyper-V server before deploying VMs for each flavor
 ################################################
+# Install and configure DHCP service (used by Hyper-V nested VMs)
+Write-Host "Configuring DHCP Service"
+$dnsClient = Get-DnsClient | Where-Object { $_.InterfaceAlias -eq "Ethernet" }
+$dhcpScope = Get-DhcpServerv4Scope
+if ($dhcpScope.Name -ne "ArcBox") {
+    Add-DhcpServerv4Scope -Name "ArcBox" `
+        -StartRange 10.10.1.100 `
+        -EndRange 10.10.1.200 `
+        -SubnetMask 255.255.255.0 `
+        -LeaseDuration 1.00:00:00 `
+        -State Active
+}
 
+$dhcpOptions = Get-DhcpServerv4OptionValue
+if ($dhcpOptions.Count -lt 3) {
+    Set-DhcpServerv4OptionValue -ComputerName localhost `
+        -DnsDomain $dnsClient.ConnectionSpecificSuffix `
+        -DnsServer 168.63.129.16, 10.16.2.100 `
+        -Router 10.10.1.1 `
+        -Force
+}
+
+# Create the NAT network
+Write-Host "Creating Internal NAT"
+$natName = "InternalNat"
+$netNat = Get-NetNat
+if ($netNat.Name -ne $natName) {
+    New-NetNat -Name $natName -InternalIPInterfaceAddressPrefix 10.10.1.0/24
+}
+
+# Create an internal switch with NAT
+Write-Host "Creating Internal vSwitch"
+$switchName = 'InternalNATSwitch'
+
+# Verify if internal switch is already created, if not create a new switch
+$inernalSwitch = Get-VMSwitch
+if ($inernalSwitch.Name -ne $switchName) {
+    New-VMSwitch -Name $switchName -SwitchType Internal
+    $adapter = Get-NetAdapter | Where-Object { $_.Name -like "*" + $switchName + "*" }
+
+    # Create an internal network (gateway first)
+    Write-Host "Creating Gateway"
+    New-NetIPAddress -IPAddress 10.10.1.1 -PrefixLength 24 -InterfaceIndex $adapter.ifIndex
+
+    # Enable Enhanced Session Mode on Host
+    Write-Host "Enabling Enhanced Session Mode"
+    Set-VMHost -EnableEnhancedSessionMode $true
+}
+
+Write-Host "Creating demo VM Credentials"
+# Hard-coded username and password for the nested demo VMs
+$nestedWindowsUsername = "Administrator"
+$nestedWindowsPassword = "JS123!!"
+
+# Hard-coded username and password for the nested demo 2012 VM
+$nestedWindows2k12Username = "Administrator"
+$nestedWindows2k12Password = "JS123!!"
+
+# Create Windows credential object
+$secWindowsPassword = ConvertTo-SecureString $nestedWindowsPassword -AsPlainText -Force
+$winCreds = New-Object System.Management.Automation.PSCredential ($nestedWindowsUsername, $secWindowsPassword)
+
+# Create Windows credential object for 2012
+$secWindows2k12Password = ConvertTo-SecureString $nestedWindows2k12Password -AsPlainText -Force
+$win2k12Creds = New-Object System.Management.Automation.PSCredential ($nestedWindows2k12Username, $secWindows2k12Password)
+
+# Creating Hyper-V Manager desktop shortcut
+Write-Host "Creating Hyper-V Shortcut"
+Copy-Item -Path "C:\ProgramData\Microsoft\Windows\Start Menu\Programs\Administrative Tools\Hyper-V Manager.lnk" -Destination "C:\Users\All Users\Desktop" -Force
+
+# Configure the ArcBox Hyper-V host to allow the nested VMs onboard as Azure Arc-enabled servers
+<#Write-Host "Blocking IMDS"
+Write-Output "Configure the ArcBox VM to allow the nested VMs onboard as Azure Arc-enabled servers"
+Set-Service WindowsAzureGuestAgent -StartupType Disabled -Verbose
+Stop-Service WindowsAzureGuestAgent -Force -Verbose
+
+if (!(Get-NetFirewallRule -Name BlockAzureIMDS -ErrorAction SilentlyContinue).Enabled) {
+    New-NetFirewallRule -Name BlockAzureIMDS -DisplayName "Block access to Azure IMDS" -Enabled True -Profile Any -Direction Outbound -Action Block -RemoteAddress 169.254.169.254
+}#>
+
+$cliDir = New-Item -Path "$Env:ArcBoxDir\.cli\" -Name ".servers" -ItemType Directory -Force
+if (-not $($cliDir.Parent.Attributes.HasFlag([System.IO.FileAttributes]::Hidden))) {
+    $folder = Get-Item $cliDir.Parent.FullName -ErrorAction SilentlyContinue
+    $folder.Attributes += [System.IO.FileAttributes]::Hidden
+}
+
+$Env:AZURE_CONFIG_DIR = $cliDir.FullName
+
+# Install Azure CLI extensions
+Write-Host "Az CLI extensions"
+az extension add --name ssh --yes --only-show-errors
+az extension add --name log-analytics-solution --yes --only-show-errors
+az extension add --name connectedmachine --yes --only-show-errors
+az extension add --name monitor-control-service --yes --only-show-errors
+
+# Required for CLI commands
+Write-Host "Az CLI Login"
+az login --identity
+
+az account set -s $subscriptionId
+
+# Connect to azure using azure powershell
+$null = Connect-AzAccount -Identity -Tenant $spnTenantId
+$null = Select-AzSubscription -SubscriptionId $subscriptionId
+$accessToken = ConvertFrom-SecureString ((Get-AzAccessToken -AsSecureString).Token) -AsPlainText
+
+Set-AzContext -Subscription $subscriptionId -tenant $spnTenantId
     # Onboard nested Windows and Linux VMs to Azure Arc
   
         Write-Header "Fetching Nested VMs"
