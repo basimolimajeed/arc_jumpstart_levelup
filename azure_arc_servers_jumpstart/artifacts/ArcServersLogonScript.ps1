@@ -10,7 +10,7 @@ $agentScript = "$Env:ArcBoxDir\agentScript"
 
 # Set variables to execute remote powershell scripts on guest VMs
 $nestedVMArcBoxDir = $Env:ArcBoxDir
-$tenantId = $env:tenantId
+$spnTenantId = $env:spnTenantId
 $subscriptionId = $env:subscriptionId
 $azureLocation = $env:azureLocation
 $resourceGroup = $env:resourceGroup
@@ -198,12 +198,19 @@ Set-AzContext -Subscription $subscriptionId -tenant $spnTenantId
         $Ubuntu02vmName = "$namingPrefix-Ubuntu-02"
         $Ubuntu02vmvhdPath = "${Env:ArcBoxVMDir}\ArcBox-Ubuntu-02.vhdx"
 
+        $Win2k12vmName = "JSWin2K12Base"
+        $Win2k12MachineName = "$namingPrefix-Win2k12"
+        $win2k12vmvhdPath = "${Env:ArcBoxVMDir}\${Win2k12vmName}.vhdx"
+        
+        $SQLvmName = "$namingPrefix-SQL"
+        $SQLvmvhdPath = "$Env:ArcBoxVMDir\${SQLvmName}.vhdx"
+ 
         # Verify if VHD files already downloaded especially when re-running this script
-        if (!((Test-Path $win2k19vmvhdPath) -and (Test-Path $Win2k22vmvhdPath) -and (Test-Path $Ubuntu01vmvhdPath) -and (Test-Path $Ubuntu02vmvhdPath))) {
+        if (!((Test-Path $win2k19vmvhdPath) -and (Test-Path $Win2k22vmvhdPath) -and (Test-Path $Ubuntu01vmvhdPath) -and (Test-Path $Ubuntu02vmvhdPath) -and (Test-Path $win2k12vmvhdPath) -and (Test-Path $SQLvmvhdPath))) {
             <# Action when all if and elseif conditions are false #>
             $Env:AZCOPY_BUFFER_GB = 4
             Write-Output "Downloading nested VMs VHDX files. This can take some time, hold tight..."
-            azcopy cp $vhdSourceFolder $Env:ArcBoxVMDir --include-pattern "ArcBox-Win2K19.vhdx;ArcBox-Win2K22.vhdx;ArcBox-Ubuntu-01.vhdx;ArcBox-Ubuntu-02.vhdx;" --recursive=true --check-length=false --log-level=ERROR
+            azcopy cp $vhdSourceFolder $Env:ArcBoxVMDir --include-pattern "ArcBox-Win2K19.vhdx;ArcBox-Win2K22.vhdx;ArcBox-Ubuntu-01.vhdx;ArcBox-Ubuntu-02.vhdx;ArcBox-SQL.vhdx;ArcBox-Win2k12.vhdx" --recursive=true --check-length=false --log-level=ERROR
         }
 
         # Create the nested VMs if not already created
@@ -296,7 +303,7 @@ Set-AzContext -Subscription $subscriptionId -tenant $spnTenantId
 
         # Update Linux VM onboarding script connect toAzure Arc, get new token as it might have been expired by the time execution reached this line.
         $accessToken = ConvertFrom-SecureString ((Get-AzAccessToken -AsSecureString).Token) -AsPlainText
-        (Get-Content -path "$agentScript\installArcAgentUbuntu.sh" -Raw) -replace '\$accessToken', "'$accessToken'" -replace '\$resourceGroup', "'$resourceGroup'" -replace '\$tenantId', "'$Env:tenantId'" -replace '\$azureLocation', "'$Env:azureLocation'" -replace '\$subscriptionId', "'$subscriptionId'" | Set-Content -Path "$agentScript\installArcAgentModifiedUbuntu.sh"
+        (Get-Content -path "$agentScript\installArcAgentUbuntu.sh" -Raw) -replace '\$accessToken', "'$accessToken'" -replace '\$resourceGroup', "'$resourceGroup'" -replace '\$spnTenantId', "'$Env:spnTenantId'" -replace '\$azureLocation', "'$Env:azureLocation'" -replace '\$subscriptionId', "'$subscriptionId'" | Set-Content -Path "$agentScript\installArcAgentModifiedUbuntu.sh"
 
         # Copy installation script to nested Linux VMs
         Write-Output "Transferring installation script to nested Linux VMs..."
@@ -307,7 +314,7 @@ Set-AzContext -Subscription $subscriptionId -tenant $spnTenantId
 
         # Onboarding the nested VMs as Azure Arc-enabled servers
         Write-Output "Onboarding the nested Windows VMs as Azure Arc-enabled servers"
-        Invoke-Command -VMName $Win2k19vmName,$Win2k22vmName -ScriptBlock { powershell -File $Using:nestedVMArcBoxDir\installArcAgent.ps1 -accessToken $using:accessToken, -tenantId $Using:tenantId, -subscriptionId $Using:subscriptionId, -resourceGroup $Using:resourceGroup, -azureLocation $Using:azureLocation } -Credential $winCreds
+        Invoke-Command -VMName $Win2k19vmName,$Win2k22vmName -ScriptBlock { powershell -File $Using:nestedVMArcBoxDir\installArcAgent.ps1 -accessToken $using:accessToken, -spnTenantId $Using:spnTenantId, -subscriptionId $Using:subscriptionId, -resourceGroup $Using:resourceGroup, -azureLocation $Using:azureLocation } -Credential $winCreds
 
         Write-Output "Onboarding the nested Linux VMs as an Azure Arc-enabled servers"
         $UbuntuSessions = New-PSSession -HostName $Ubuntu01VmIp,$Ubuntu02VmIp -KeyFilePath "$Env:USERPROFILE\.ssh\id_rsa" -UserName $nestedLinuxUsername
@@ -316,7 +323,7 @@ Set-AzContext -Subscription $subscriptionId -tenant $spnTenantId
         Write-Header "Enabling SSH access and triggering update assessment for Arc-enabled servers"
         $VMs = @("$namingPrefix-SQL", "$namingPrefix-Ubuntu-01", "$namingPrefix-Ubuntu-02", "$namingPrefix-Win2K19", "$namingPrefix-Win2K22")
         $VMs | ForEach-Object -Parallel {
-            $null = Connect-AzAccount -Identity -Tenant $using:tenantId -Subscription $using:subscriptionId -Scope Process -WarningAction SilentlyContinue
+            $null = Connect-AzAccount -Identity -Tenant $using:spnTenantId -Subscription $using:subscriptionId -Scope Process -WarningAction SilentlyContinue
 
             $vm = $PSItem
             $connectedMachine = Get-AzConnectedMachine -Name $vm -ResourceGroupName $using:resourceGroup -SubscriptionId $using:subscriptionId
