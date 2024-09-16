@@ -14,6 +14,7 @@ param (
     [string]$rdpPort,
     [string]$sshPort,
     [string]$vmAutologon,
+    [string]$namingPrefix,
     [string]$changeTrackingDCR,
     [string]$vmInsightsDCR
     )
@@ -35,6 +36,7 @@ param (
 #[System.Environment]::SetEnvironmentVariable('deploySQL', $deploySQL, [System.EnvironmentVariableTarget]::Machine)
 [System.Environment]::SetEnvironmentVariable('ArcBoxDir', "C:\ArcBox", [System.EnvironmentVariableTarget]::Machine)
 [System.Environment]::SetEnvironmentVariable('changeTrackingDCR', $changeTrackingDCR, [System.EnvironmentVariableTarget]::Machine)
+[System.Environment]::SetEnvironmentVariable('namingPrefix', $namingPrefix, [System.EnvironmentVariableTarget]::Machine)
 [System.Environment]::SetEnvironmentVariable('vmInsightsDCR', $vmInsightsDCR, [System.EnvironmentVariableTarget]::Machine)
 
  # Formatting VMs disk

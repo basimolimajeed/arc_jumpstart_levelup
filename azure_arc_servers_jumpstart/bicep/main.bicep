@@ -39,6 +39,10 @@ param emailAddress string
 
 param location string = resourceGroup().location
 
+//@maxLength(7)
+//@description('The naming prefix for the nested virtual machines and all Azure resources deployed. The maximum length for the naming prefix is 7 characters,example: `ArcBox-Win2k19`')
+//param namingPrefix string = 'ArcBox'
+
 //@description('Option to deploy Arc-enabled SQL scenarios.')
 //param deploySQL bool = false
 
