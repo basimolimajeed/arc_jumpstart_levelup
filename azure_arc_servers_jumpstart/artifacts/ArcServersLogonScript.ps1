@@ -171,19 +171,19 @@ $Env:AZURE_CONFIG_DIR = $cliDir.FullName
 
 # Install Azure CLI extensions
 Write-Host "Az CLI extensions"
-# az extension add --name ssh --yes --only-show-errors
-# az extension add --name log-analytics-solution --yes --only-show-errors
-# az extension add --name connectedmachine --yes --only-show-errors
-# az extension add --name monitor-control-service --yes --only-show-errors
+az extension add --name ssh --yes --only-show-errors
+az extension add --name log-analytics-solution --yes --only-show-errors
+az extension add --name connectedmachine --yes --only-show-errors
+az extension add --name monitor-control-service --yes --only-show-errors
 
-Write-Header "Az CLI extensions"
+#Write-Header "Az CLI extensions"
 
-az config set extension.use_dynamic_install=yes_without_prompt --only-show-errors
+# az config set extension.use_dynamic_install=yes_without_prompt --only-show-errors
 
-@("ssh", "log-analytics-solution", "connectedmachine", "monitor-control-service") |
-ForEach-Object -Parallel {
-    az extension add --name $PSItem --yes --only-show-errors
-}
+# @("ssh", "log-analytics-solution", "connectedmachine", "monitor-control-service") |
+# ForEach-Object -Parallel {
+#     az extension add --name $PSItem --yes --only-show-errors
+# }
 
 # Required for CLI commands
 Write-Host "Az CLI Login"
@@ -235,6 +235,18 @@ Write-Header "Create Hyper-V VMs"
 $serversDscConfigurationFile = "$Env:ArcBoxDscDir\virtual_machines_itpro.dsc.yml"
         (Get-Content -Path $serversDscConfigurationFile) -replace 'namingPrefixStage', $namingPrefix | Set-Content -Path $serversDscConfigurationFile
 winget configure --file C:\ArcBox\DSC\virtual_machines_itpro.dsc.yml --accept-configuration-agreements --disable-interactivity
+
+# Configure WinRM for 2012 machine
+$2012Machine = Get-VM $Win2k12MachineName
+$privateIpAddress = $2012Machine.networkAdapters.ipaddresses[0]
+Enable-PSRemoting
+set-item wsman:\localhost\client\trustedhosts -Concatenate -value $privateIpAddress -Force
+set-item wsman:\localhost\client\trustedhosts -Concatenate -value "$Win2k12vmName" -Force
+Restart-Service WinRm -Force
+$file = "C:\Windows\System32\drivers\etc\hosts"
+$hostfile = Get-Content $file
+$hostfile += "$privateIpAddress $Win2k12vmName"
+Set-Content -Path $file -Value $hostfile -Force
 
 Write-Header "Creating Linux VM Credentials"
 # Hard-coded username and password for the nested VMs
