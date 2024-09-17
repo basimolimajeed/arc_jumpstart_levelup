@@ -1,5 +1,3 @@
-#$ErrorActionPreference = $env:ErrorActionPreference
-
 $Env:ArcBoxDir = "C:\ArcBox"
 $Env:ArcBoxLogsDir = "$Env:ArcBoxDir\Logs"
 $Env:ArcBoxVMDir = "F:\Virtual Machines"
@@ -239,16 +237,16 @@ winget configure --file C:\ArcBox\DSC\virtual_machines_itpro.dsc.yml --accept-co
 Start-Sleep -seconds 20
 
 # Start all the VMs
-Write-Host "Starting VMs"
-Start-VM -Name $Win2k19vmName
-Start-VM -Name $Win2k22vmName
-Start-VM -Name $Ubuntu01vmName
-Start-VM -Name $Ubuntu02vmName
-Start-VM -Name $Win2k12MachineName
-Start-VM -Name $SQLvmName
+#Write-Host "Starting VMs"
+#Start-VM -Name $Win2k19vmName
+#Start-VM -Name $Win2k22vmName
+#Start-VM -Name $Ubuntu01vmName
+#Start-VM -Name $Ubuntu02vmName
+#Start-VM -Name $Win2k12MachineName
+#Start-VM -Name $SQLvmName
 
 
-Start-Sleep -seconds 30
+#Start-Sleep -seconds 30
 
 # Configure WinRM for 2012 machine
 $2012Machine = Get-VM $Win2k12MachineName
