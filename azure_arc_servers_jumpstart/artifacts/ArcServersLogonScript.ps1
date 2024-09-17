@@ -236,6 +236,20 @@ $serversDscConfigurationFile = "$Env:ArcBoxDscDir\virtual_machines_itpro.dsc.yml
         (Get-Content -Path $serversDscConfigurationFile) -replace 'namingPrefixStage', $namingPrefix | Set-Content -Path $serversDscConfigurationFile
 winget configure --file C:\ArcBox\DSC\virtual_machines_itpro.dsc.yml --accept-configuration-agreements --disable-interactivity
 
+Start-Sleep -seconds 20
+
+# Start all the VMs
+Write-Host "Starting VMs"
+Start-VM -Name $Win2k19vmName
+Start-VM -Name $Win2k22vmName
+Start-VM -Name $Ubuntu01vmName
+Start-VM -Name $Ubuntu02vmName
+Start-VM -Name $Win2k12MachineName
+Start-VM -Name $SQLvmName
+
+
+Start-Sleep -seconds 30
+
 # Configure WinRM for 2012 machine
 $2012Machine = Get-VM $Win2k12MachineName
 $privateIpAddress = $2012Machine.networkAdapters.ipaddresses[0]
