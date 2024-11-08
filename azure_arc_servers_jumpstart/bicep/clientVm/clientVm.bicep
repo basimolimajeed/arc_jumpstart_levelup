@@ -197,7 +197,7 @@ resource vmBootstrap 'Microsoft.Compute/virtualMachines/extensions@2022-03-01' =
 
 // Add role assignment for the VM: Owner role
 resource vmRoleAssignment_Owner 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
-  name: guid(vm.id, 'Microsoft.Authorization/roleAssignments', 'Owner')
+  name: guid(vm.id, 'Microsoft.Authorization/roleAssignments', 'Contributor')
   scope: resourceGroup()
   properties: {
     principalId: vm.identity.principalId
