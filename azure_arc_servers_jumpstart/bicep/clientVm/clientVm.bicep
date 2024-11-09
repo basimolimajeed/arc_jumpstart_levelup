@@ -196,12 +196,40 @@ resource vmBootstrap 'Microsoft.Compute/virtualMachines/extensions@2022-03-01' =
 }
 
 // Add role assignment for the VM: Owner role
-resource vmRoleAssignment_Owner 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
-  name: guid(vm.id, 'Microsoft.Authorization/roleAssignments', 'Contributor')
+// resource vmRoleAssignment_Owner 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
+//   name: guid(vm.id, 'Microsoft.Authorization/roleAssignments', 'Contributor')
+//   scope: resourceGroup()
+//   properties: {
+//     principalId: vm.identity.principalId
+//     roleDefinitionId: resourceId('Microsoft.Authorization/roleDefinitions', '8e3af657-a8ff-443c-a75c-2fe8c4bcb635')
+//   }
+// }
+
+//New roles for cloudslice
+resource vmRoleAssignment_VMContributor 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
+  name: guid(vm.id, 'Microsoft.Authorization/roleAssignments', 'Virtual Machine Contributor')
   scope: resourceGroup()
   properties: {
     principalId: vm.identity.principalId
-    roleDefinitionId: resourceId('Microsoft.Authorization/roleDefinitions', '8e3af657-a8ff-443c-a75c-2fe8c4bcb635')
+    roleDefinitionId: resourceId('Microsoft.Authorization/roleDefinitions', '9980e02c-c2be-4d73-94e8-173b1dc7cf3c')
+  }
+}
+
+resource vmRoleAssignment_HybridOnboarding 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
+  name: guid(vm.id, 'Microsoft.Authorization/roleAssignments', 'Hybrid Server Onboarding')
+  scope: resourceGroup()
+  properties: {
+    principalId: vm.identity.principalId
+    roleDefinitionId: resourceId('Microsoft.Authorization/roleDefinitions', '5d1e5ee4-7c68-4a71-ac8b-0739630a3dfb')
+  }
+}
+
+resource vmRoleAssignment_Monitoring 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
+  name: guid(vm.id, 'Microsoft.Authorization/roleAssignments', 'Monitoring Contributor')
+  scope: resourceGroup()
+  properties: {
+    principalId: vm.identity.principalId
+    roleDefinitionId: resourceId('Microsoft.Authorization/roleDefinitions', '749f88d5-cbae-40b8-bcfc-e573ddc772fa')
   }
 }
 
