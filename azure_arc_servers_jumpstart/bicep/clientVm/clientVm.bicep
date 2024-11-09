@@ -233,5 +233,13 @@ resource vmRoleAssignment_Monitoring 'Microsoft.Authorization/roleAssignments@20
   }
 }
 
+resource vmRoleAssignment_HybridManagement 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
+  name: guid(vm.id, 'Microsoft.Authorization/roleAssignments', 'Azure Connected Machine Resource Administrator')
+  scope: resourceGroup()
+  properties: {
+    principalId: vm.identity.principalId
+    roleDefinitionId: resourceId('Microsoft.Authorization/roleDefinitions', 'cd570a14-e51a-42ad-bac8-bafd67325302')
+  }
+}
 output adminUsername string = windowsAdminUsername
 output publicIP string = deployBastion == false ? concat(publicIpAddress.properties.ipAddress) : ''
