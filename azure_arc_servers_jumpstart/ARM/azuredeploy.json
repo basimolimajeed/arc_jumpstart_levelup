@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.31.34.60546",
-      "templateHash": "14384380580729571827"
+      "templateHash": "9649936917549568516"
     }
   },
   "parameters": {
@@ -14,6 +14,17 @@
       "defaultValue": "[tenant().tenantId]",
       "metadata": {
         "description": "Azure AD tenant id for your service principal"
+      }
+    },
+    "clientVmSku": {
+      "type": "string",
+      "allowedValues": [
+        "Standard_E8s_v5",
+        "Standard_E8s_v4",
+        "Standard_E8s_v3"
+      ],
+      "metadata": {
+        "description": "Client Machine SKU"
       }
     },
     "windowsAdminUsername": {
@@ -154,6 +165,9 @@
           },
           "vmInsightsDCR": {
             "value": "[reference(resourceId('Microsoft.Resources/deployments', 'dataCollectionRules'), '2022-09-01').outputs.vmInsightsDCR.value]"
+          },
+          "clientVmSku": {
+            "value": "[parameters('clientVmSku')]"
           }
         },
         "template": {
@@ -163,7 +177,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.31.34.60546",
-              "templateHash": "2733418156813418122"
+              "templateHash": "6609111462377071229"
             }
           },
           "parameters": {
@@ -172,6 +186,12 @@
               "defaultValue": "ArcBox-Client",
               "metadata": {
                 "description": "The name of your Virtual Machine"
+              }
+            },
+            "clientVmSku": {
+              "type": "string",
+              "metadata": {
+                "description": "Client Vm Sku"
               }
             },
             "windowsAdminUsername": {
@@ -358,7 +378,7 @@
               "location": "[parameters('location')]",
               "tags": "[parameters('resourceTags')]",
               "identity": {
-                "type": "SystemAssigned"
+                "type": "[parameters('clientVmSku')]"
               },
               "properties": {
                 "hardwareProfile": {

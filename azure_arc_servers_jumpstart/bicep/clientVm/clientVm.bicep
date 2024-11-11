@@ -1,6 +1,9 @@
 @description('The name of your Virtual Machine')
 param vmName string = 'ArcBox-Client'
 
+@description('Client Vm Sku')
+param clientVmSku string 
+
 @description('Username for the Virtual Machine')
 param windowsAdminUsername string = 'arcdemo'
 
@@ -108,7 +111,7 @@ resource vm 'Microsoft.Compute/virtualMachines@2022-03-01' = {
   location: location
   tags: resourceTags
   identity: {
-    type: 'SystemAssigned'
+    type: clientVmSku
   }
   properties: {
     hardwareProfile: {
