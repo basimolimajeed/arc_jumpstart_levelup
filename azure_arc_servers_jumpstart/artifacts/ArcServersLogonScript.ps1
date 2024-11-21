@@ -167,6 +167,9 @@ $Ubuntu01vmvhdPath = "${Env:ArcBoxVMDir}\${Ubuntu01vmName}.vhdx"
 $Ubuntu02vmName = "ArcBox-Ubuntu-02"
 $Ubuntu02vmvhdPath = "${Env:ArcBoxVMDir}\${Ubuntu02vmName}.vhdx"
 
+$Win2k25vmName = "ArcBox-Win2K25"
+$Win2k25vmvhdPath = "${Env:ArcBoxVMDir}\${Win2k25vmName}.vhdx"
+
 #$Win2k12vmName = "JSWin2K12Base"
 #$Win2k12MachineName = "ArcBox-Win2k12"
 #$win2k12vmvhdPath = "${Env:ArcBoxVMDir}\${Win2k12vmName}.vhdx"
@@ -176,12 +179,12 @@ $SQLvmNameWSPLUS = "ArcBox-SQL"
 $SQLvmvhdPath = "$Env:ArcBoxVMDir\${SQLvmName}.vhdx"
 
 # Verify if VHD files already downloaded especially when re-running this script
-if (!([System.IO.File]::Exists($win2k19vmvhdPath) -and [System.IO.File]::Exists($Win2k22vmvhdPath) -and [System.IO.File]::Exists($Ubuntu01vmvhdPath) -and [System.IO.File]::Exists($Ubuntu02vmvhdPath))) {
+if (!([System.IO.File]::Exists($win2k19vmvhdPath) -and [System.IO.File]::Exists($Win2k22vmvhdPath) -and [System.IO.File]::Exists($Win2k25vmvhdPath) -and [System.IO.File]::Exists($Ubuntu01vmvhdPath) -and [System.IO.File]::Exists($Ubuntu02vmvhdPath))) {
     <# Action when all if and elseif conditions are false #>
     $Env:AZCOPY_BUFFER_GB = 4
     # Other ArcBox flavors does not have an azcopy network throughput capping
     Write-Output "Downloading nested VMs VHDX files. This can take some time, hold tight..."
-    azcopy cp $vhdSourceFolder $Env:ArcBoxVMDir --include-pattern "${Win2k19vmName}.vhdx;${Win2k22vmName}.vhdx;${Ubuntu01vmName}.vhdx;${Ubuntu02vmName}.vhdx;${SQLvmName}.vhdx;" --recursive=true --check-length=false --log-level=ERROR --check-md5 NoCheck
+    azcopy cp $vhdSourceFolder $Env:ArcBoxVMDir --include-pattern "${Win2k19vmName}.vhdx;${Win2k22vmName}.vhdx;${Win2k22vmName}.vhdx;${Ubuntu01vmName}.vhdx;${Ubuntu02vmName}.vhdx;${SQLvmName}.vhdx;" --recursive=true --check-length=false --log-level=ERROR --check-md5 NoCheck
     #azcopy cp $vhdSourceFolderESU $Env:ArcBoxVMDir --include-pattern "${Win2k12vmName}.vhdx;" --recursive=true --check-length=false --log-level=ERROR --check-md5 NoCheck
 }
 
@@ -206,9 +209,16 @@ if ((Get-VM -Name $Win2k19vmName -ErrorAction SilentlyContinue).State -ne "Runni
 
 if ((Get-VM -Name $Win2k22vmName -ErrorAction SilentlyContinue).State -ne "Running") {
     Remove-VM -Name $Win2k22vmName -Force -ErrorAction SilentlyContinue
-    New-VM -Name $Win2k22vmName -MemoryStartupBytes 10GB -BootDevice VHD -VHDPath $Win2k22vmvhdPath -Path $Env:ArcBoxVMDir -Generation 2 -Switch $switchName
+    New-VM -Name $Win2k22vmName -MemoryStartupBytes 4GB -BootDevice VHD -VHDPath $Win2k22vmvhdPath -Path $Env:ArcBoxVMDir -Generation 2 -Switch $switchName
     Set-VMProcessor -VMName $Win2k22vmName -Count 2
     Set-VM -Name $Win2k22vmName -AutomaticStartAction Start -AutomaticStopAction ShutDown
+}
+
+if ((Get-VM -Name $Win2k25vmName -ErrorAction SilentlyContinue).State -ne "Running") {
+    Remove-VM -Name $Win2k25vmName -Force -ErrorAction SilentlyContinue
+    New-VM -Name $Win2k25vmName -MemoryStartupBytes 4GB -BootDevice VHD -VHDPath $Win2k25vmvhdPath -Path $Env:ArcBoxVMDir -Generation 2 -Switch $switchName
+    Set-VMProcessor -VMName $Win2k25vmName -Count 2
+    Set-VM -Name $Win2k25vmName -AutomaticStartAction Start -AutomaticStopAction ShutDown
 }
 
 if ((Get-VM -Name $Ubuntu01vmName -ErrorAction SilentlyContinue).State -ne "Running") {
@@ -244,6 +254,7 @@ Start-Sleep -seconds 20
 Write-Host "Starting VMs"
 Start-VM -Name $Win2k19vmName
 Start-VM -Name $Win2k22vmName
+Start-VM -Name $Win2k25vmName
 Start-VM -Name $Ubuntu01vmName
 Start-VM -Name $Ubuntu02vmName
 #Start-VM -Name $Win2k12MachineName
@@ -278,6 +289,7 @@ Write-Host "Restarting Network Adapters"
 Start-Sleep -Seconds 20
 Invoke-Command -VMName $Win2k19vmName -ScriptBlock { Get-NetAdapter | Restart-NetAdapter } -Credential $winCreds
 Invoke-Command -VMName $Win2k22vmName -ScriptBlock { Get-NetAdapter | Restart-NetAdapter } -Credential $winCreds
+Invoke-Command -VMName $Win2k25vmName -ScriptBlock { Get-NetAdapter | Restart-NetAdapter } -Credential $winCreds
 #$session = New-PSSession -ComputerName $Win2k12vmName -Credential $win2k12Creds
 #Invoke-Command -session $session -Script {Get-NetAdapter | Restart-NetAdapter} -AsJob | Receive-Job -Wait
 #Exit-PSSession
@@ -297,7 +309,7 @@ Start-Sleep -Seconds 20
 # Copy installation script to nested Windows VMs
 Write-Output "Transferring installation script to nested Windows VMs..."
 Copy-VMFile $Win2k19vmName -SourcePath "$agentScript\installArcAgent.ps1" -DestinationPath "$Env:ArcBoxDir\installArcAgent.ps1" -CreateFullPath -FileSource Host -Force
-Copy-VMFile $Win2k22vmName -SourcePath "$agentScript\installArcAgent.ps1" -DestinationPath "$Env:ArcBoxDir\installArcAgent.ps1" -CreateFullPath -FileSource Host -Force
+#Copy-VMFile $Win2k22vmName -SourcePath "$agentScript\installArcAgent.ps1" -DestinationPath "$Env:ArcBoxDir\installArcAgent.ps1" -CreateFullPath -FileSource Host -Force
 #Copy-VMFile $Win2k12MachineName -SourcePath "$agentScript\installArcAgent.ps1" -DestinationPath "$Env:ArcBoxDir\installArcAgent.ps1" -CreateFullPath -FileSource Host -Force
 
 Copy-VMFile $SQLvmName -SourcePath "$agentScript\installArcAgent.ps1" -DestinationPath "$Env:ArcBoxDir\installArcAgent.ps1" -CreateFullPath -FileSource Host -Force
@@ -335,7 +347,7 @@ Invoke-Command -VMName $Win2k19vmName -ScriptBlock { powershell -File $Using:nes
 $remoteScriptFile = "$Env:ArcBoxDir\testDefenderForServers.cmd"
 Copy-VMFile $Win2k19vmName -SourcePath "$agentScript\testDefenderForServers.cmd" -DestinationPath $remoteScriptFile -CreateFullPath -FileSource Host -Force
 Copy-VMFile $Win2k22vmName -SourcePath "$agentScript\testDefenderForServers.cmd" -DestinationPath $remoteScriptFile -CreateFullPath -FileSource Host -Force
-
+Copy-VMFile $Win2k25vmName -SourcePath "$agentScript\testDefenderForServers.cmd" -DestinationPath $remoteScriptFile -CreateFullPath -FileSource Host -Force
 #$cmdExePath = "C:\Windows\System32\cmd.exe"
 #$cmdArguments = "/C `"$remoteScriptFile`""
 
@@ -373,6 +385,10 @@ Start-Process msiexec.exe -ArgumentList "/I $Env:ArcBoxDir\PowerShell-7.4.1-win-
 Write-Host "Installing PowerShell 7 on the ArcBox-Win2K22 machine"
 Copy-VMFile $Win2k22vmName -SourcePath "$Env:ArcBoxDir\PowerShell-7.4.1-win-x64.msi" -DestinationPath "$Env:ArcBoxDir\PowerShell-7.4.1-win-x64.msi" -CreateFullPath -FileSource Host -Force
 Invoke-Command -VMName $Win2k22vmName -ScriptBlock { Start-Process msiexec.exe -ArgumentList "/I C:\ArcBox\PowerShell-7.4.1-win-x64.msi /quiet" } -Credential $winCreds
+
+Write-Host "Installing PowerShell 7 on the ArcBox-Win2K25 machine"
+Copy-VMFile $Win2k25vmName -SourcePath "$Env:ArcBoxDir\PowerShell-7.4.1-win-x64.msi" -DestinationPath "$Env:ArcBoxDir\PowerShell-7.4.1-win-x64.msi" -CreateFullPath -FileSource Host -Force
+Invoke-Command -VMName $Win2k25vmName -ScriptBlock { Start-Process msiexec.exe -ArgumentList "/I C:\ArcBox\PowerShell-7.4.1-win-x64.msi /quiet" } -Credential $winCreds
 
 Write-Host "Installing PowerShell 7 on the ArcBox-Win2K19 machine"
 Copy-VMFile $Win2k19vmName -SourcePath "$Env:ArcBoxDir\PowerShell-7.4.1-win-x64.msi" -DestinationPath "$Env:ArcBoxDir\PowerShell-7.4.1-win-x64.msi" -CreateFullPath -FileSource Host -Force
