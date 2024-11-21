@@ -184,7 +184,7 @@ if (!([System.IO.File]::Exists($win2k19vmvhdPath) -and [System.IO.File]::Exists(
     $Env:AZCOPY_BUFFER_GB = 4
     # Other ArcBox flavors does not have an azcopy network throughput capping
     Write-Output "Downloading nested VMs VHDX files. This can take some time, hold tight..."
-    azcopy cp $vhdSourceFolder $Env:ArcBoxVMDir --include-pattern "${Win2k19vmName}.vhdx;${Win2k22vmName}.vhdx;${Win2k22vmName}.vhdx;${Ubuntu01vmName}.vhdx;${Ubuntu02vmName}.vhdx;${SQLvmName}.vhdx;" --recursive=true --check-length=false --log-level=ERROR --check-md5 NoCheck
+    azcopy cp $vhdSourceFolder $Env:ArcBoxVMDir --include-pattern "${Win2k19vmName}.vhdx;${Win2k22vmName}.vhdx;${Win2k25vmName}.vhdx;${Ubuntu01vmName}.vhdx;${Ubuntu02vmName}.vhdx;${SQLvmName}.vhdx;" --recursive=true --check-length=false --log-level=ERROR --check-md5 NoCheck
     #azcopy cp $vhdSourceFolderESU $Env:ArcBoxVMDir --include-pattern "${Win2k12vmName}.vhdx;" --recursive=true --check-length=false --log-level=ERROR --check-md5 NoCheck
 }
 
