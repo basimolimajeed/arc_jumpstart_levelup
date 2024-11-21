@@ -36,7 +36,8 @@ foreach ($key in $keys) {
         $property = Get-ItemProperty -Path $registryPath -Name $key -ErrorAction Stop
         Remove-ItemProperty -Path $registryPath -Name $key
         Write-Host "Removed registry key that are used to automatically logon the user: $key"
-    } catch {
+    }
+    catch {
         Write-Verbose "Key $key does not exist."
     }
 }
@@ -184,7 +185,11 @@ if (!([System.IO.File]::Exists($win2k19vmvhdPath) -and [System.IO.File]::Exists(
     $Env:AZCOPY_BUFFER_GB = 4
     # Other ArcBox flavors does not have an azcopy network throughput capping
     Write-Output "Downloading nested VMs VHDX files. This can take some time, hold tight..."
-    azcopy cp $vhdSourceFolder $Env:ArcBoxVMDir --include-pattern "${Win2k19vmName}.vhdx;${Win2k22vmName}.vhdx;${Win2k25vmName}.vhdx;${Ubuntu01vmName}.vhdx;${Ubuntu02vmName}.vhdx;${SQLvmName}.vhdx;" --recursive=true --check-length=false --log-level=ERROR --check-md5 NoCheck
+    azcopy cp $vhdSourceFolder $Env:ArcBoxVMDir --include-pattern "${Win2k19vmName}.vhdx;${Win2k22vmName}.vhdx;${Ubuntu01vmName}.vhdx;${Ubuntu02vmName}.vhdx;${SQLvmName}.vhdx;" --recursive=true --check-length=false --log-level=ERROR --check-md5 NoCheck
+    
+    # Windows Server 2025
+    $Win2K25VhdxUri = 'https://arcboxvhdsb24xrypy.blob.core.windows.net/vhdx/ArcBox-Win2K25.vhdx'
+    azcopy cp $Win2K25VhdxUri $Env:ArcBoxVMDir --check-length=false --log-level=ERROR
     #azcopy cp $vhdSourceFolderESU $Env:ArcBoxVMDir --include-pattern "${Win2k12vmName}.vhdx;" --recursive=true --check-length=false --log-level=ERROR --check-md5 NoCheck
 }
 
@@ -456,9 +461,9 @@ az connectedmachine extension create --name DependencyAgent --publisher Microsof
 Write-Host "Enabling SSH access to Arc-enabled servers"
 $VMs = @("ArcBox-Ubuntu-01", "ArcBox-Win2K19")
 $VMs | ForEach-Object -Parallel {
-    $spnTenantId  =  $Using:spnTenantId
-    $subscriptionId  =  $Using:subscriptionId
-    $resourceGroup  =  $Using:resourceGroup
+    $spnTenantId = $Using:spnTenantId
+    $subscriptionId = $Using:subscriptionId
+    $resourceGroup = $Using:resourceGroup
 
     $null = Connect-AzAccount -Identity -Tenant $spntenantId -Subscription $subscriptionId -Scope Process -WarningAction SilentlyContinue
     $null = Select-AzSubscription -SubscriptionId $subscriptionId
