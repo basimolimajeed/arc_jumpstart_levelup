@@ -210,7 +210,7 @@ if ((Get-VM -Name $Win2k19vmName -ErrorAction SilentlyContinue).State -ne "Runni
 if ((Get-VM -Name $Win2k22vmName -ErrorAction SilentlyContinue).State -ne "Running") {
     Remove-VM -Name $Win2k22vmName -Force -ErrorAction SilentlyContinue
     New-VM -Name $Win2k22vmName -MemoryStartupBytes 4GB -BootDevice VHD -VHDPath $Win2k22vmvhdPath -Path $Env:ArcBoxVMDir -Generation 2 -Switch $switchName
-    Set-VMProcessor -VMName $Win2k22vmName -Count 2
+    Set-VMProcessor -VMName $Win2k22vmName -Count 1
     Set-VM -Name $Win2k22vmName -AutomaticStartAction Start -AutomaticStopAction ShutDown
 }
 
