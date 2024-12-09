@@ -188,7 +188,8 @@ if (!([System.IO.File]::Exists($win2k19vmvhdPath) -and [System.IO.File]::Exists(
     azcopy cp $vhdSourceFolder $Env:ArcBoxVMDir --include-pattern "${Win2k19vmName}.vhdx;${Win2k22vmName}.vhdx;${Ubuntu01vmName}.vhdx;${Ubuntu02vmName}.vhdx;${SQLvmName}.vhdx;" --recursive=true --check-length=false --log-level=ERROR --check-md5 NoCheck
     
     # Windows Server 2025
-    $Win2K25VhdxUri = 'https://arcboxvhdsb24xrypy.blob.core.windows.net/vhdx/ArcBox-Win2K25.vhdx'
+    
+    $Win2K25VhdxUri = 'https://jumpstartprodsg.blob.core.windows.net/arcbox/preprod/ArcBox-Win2K25.vhdx'
     azcopy cp $Win2K25VhdxUri $Env:ArcBoxVMDir --check-length=false --log-level=ERROR
     #azcopy cp $vhdSourceFolderESU $Env:ArcBoxVMDir --include-pattern "${Win2k12vmName}.vhdx;" --recursive=true --check-length=false --log-level=ERROR --check-md5 NoCheck
 }
