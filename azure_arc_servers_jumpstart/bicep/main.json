@@ -4,8 +4,8 @@
   "metadata": {
     "_generator": {
       "name": "bicep",
-      "version": "0.32.4.45862",
-      "templateHash": "5245309964676060137"
+      "version": "0.34.44.8038",
+      "templateHash": "6037139106731507636"
     }
   },
   "parameters": {
@@ -150,8 +150,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.32.4.45862",
-              "templateHash": "3596383505598547542"
+              "version": "0.34.44.8038",
+              "templateHash": "9121159855825652210"
             }
           },
           "parameters": {
@@ -484,8 +484,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.32.4.45862",
-              "templateHash": "18278273955685910822"
+              "version": "0.34.44.8038",
+              "templateHash": "5888547724573973016"
             }
           },
           "parameters": {
@@ -563,8 +563,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.32.4.45862",
-              "templateHash": "14814323776187584418"
+              "version": "0.34.44.8038",
+              "templateHash": "6205896706307090841"
             }
           },
           "parameters": {
@@ -940,8 +940,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.32.4.45862",
-              "templateHash": "6866560490045668540"
+              "version": "0.34.44.8038",
+              "templateHash": "4794161759652288867"
             }
           },
           "parameters": {
@@ -4540,8 +4540,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.32.4.45862",
-              "templateHash": "11080826907948722772"
+              "version": "0.34.44.8038",
+              "templateHash": "580252837855873907"
             }
           },
           "parameters": {
@@ -4615,7 +4615,7 @@
           "resources": [
             {
               "type": "Microsoft.Authorization/policyAssignments",
-              "apiVersion": "2025-03-01",
+              "apiVersion": "2025-01-01",
               "name": "(ArcBox) Tag resources",
               "location": "[parameters('azureLocation')]",
               "identity": {
@@ -4702,7 +4702,7 @@
               "name": "[guid('(ArcBox) Tag resources', variables('policies')[0].roleDefinition, resourceGroup().id)]",
               "properties": {
                 "roleDefinitionId": "[parameters('contributorRoleDefinition')]",
-                "principalId": "[reference(resourceId('Microsoft.Authorization/policyAssignments', '(ArcBox) Tag resources'), '2025-03-01', 'full').identity.principalId]",
+                "principalId": "[reference(resourceId('Microsoft.Authorization/policyAssignments', '(ArcBox) Tag resources'), '2025-01-01', 'full').identity.principalId]",
                 "principalType": "ServicePrincipal"
               },
               "dependsOn": [
@@ -4726,8 +4726,8 @@
                   "metadata": {
                     "_generator": {
                       "name": "bicep",
-                      "version": "0.32.4.45862",
-                      "templateHash": "14993175033177860953"
+                      "version": "0.34.44.8038",
+                      "templateHash": "11210496907865239646"
                     }
                   },
                   "parameters": {
@@ -4925,8 +4925,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.32.4.45862",
-              "templateHash": "16089965460427048243"
+              "version": "0.34.44.8038",
+              "templateHash": "3318022166433374356"
             }
           },
           "parameters": {
