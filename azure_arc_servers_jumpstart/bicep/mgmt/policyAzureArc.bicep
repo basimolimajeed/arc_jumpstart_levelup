@@ -59,7 +59,7 @@ var policies = [
 ]
 
 
-resource taggingPolicyAssignment 'Microsoft.Authorization/policyAssignments@2022-06-01' = {
+resource taggingPolicyAssignment 'Microsoft.Authorization/policyAssignments@2025-03-01' = {
   name: '(ArcBox) Tag resources'
   location: azureLocation
   scope: resourceGroup()
@@ -81,7 +81,7 @@ resource taggingPolicyAssignment 'Microsoft.Authorization/policyAssignments@2022
   }
 }
 
-/*resource policies_name 'Microsoft.Authorization/policyAssignments@2021-06-01' = [for item in policies: {
+/*resource policies_name 'Microsoft.Authorization/policyAssignments@2025-03-01' = [for item in policies: {
   name: item.name
   location: azureLocation
   identity: {
@@ -99,7 +99,7 @@ module arcAMAPolicies 'policySetDefinitionsAzureArc.bicep' = {
   scope: subscription(subscriptionId)
 }
 
-resource changeTrackingPolicyAssignemnt 'Microsoft.Authorization/policyAssignments@2022-06-01' = {
+resource changeTrackingPolicyAssignemnt 'Microsoft.Authorization/policyAssignments@2025-03-01' = {
   name: '(ArcBox) Enable ChangeTracking for Arc-enabled machines'
   dependsOn: [
     arcAMAPolicies
@@ -152,7 +152,7 @@ resource changeTrackingPolicyRoleAssignments3 'Microsoft.Authorization/roleAssig
 }
 
 
-resource policy_tagging_resources 'Microsoft.Authorization/roleAssignments@2020-10-01-preview' = {
+resource policy_tagging_resources 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
   name: guid(taggingPolicyAssignment.name, policies[0].roleDefinition, resourceGroup().id)
   properties: {
     roleDefinitionId: contributorRoleDefinition

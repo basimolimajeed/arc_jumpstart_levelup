@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.32.4.45862",
-      "templateHash": "16134818504383315864"
+      "templateHash": "5245309964676060137"
     }
   },
   "parameters": {
@@ -151,7 +151,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.32.4.45862",
-              "templateHash": "5628452560197793847"
+              "templateHash": "3596383505598547542"
             }
           },
           "parameters": {
@@ -185,7 +185,7 @@
             },
             "windowsOSVersion": {
               "type": "string",
-              "defaultValue": "2022-datacenter-g2",
+              "defaultValue": "2025-datacenter-g2",
               "metadata": {
                 "description": "The Windows version for the VM. This will pick a fully patched image of this given Windows version"
               }
@@ -296,7 +296,7 @@
           "resources": [
             {
               "type": "Microsoft.Network/networkInterfaces",
-              "apiVersion": "2022-01-01",
+              "apiVersion": "2024-05-01",
               "name": "[variables('networkInterfaceName')]",
               "location": "[parameters('location')]",
               "properties": {
@@ -320,7 +320,7 @@
             {
               "condition": "[equals(parameters('deployBastion'), false())]",
               "type": "Microsoft.Network/publicIPAddresses",
-              "apiVersion": "2022-01-01",
+              "apiVersion": "2024-05-01",
               "name": "[variables('publicIpAddressName')]",
               "location": "[parameters('location')]",
               "properties": {
@@ -334,7 +334,7 @@
             },
             {
               "type": "Microsoft.Compute/virtualMachines",
-              "apiVersion": "2022-03-01",
+              "apiVersion": "2024-07-01",
               "name": "[parameters('vmName')]",
               "location": "[parameters('location')]",
               "tags": "[parameters('resourceTags')]",
@@ -395,7 +395,7 @@
             },
             {
               "type": "Microsoft.Compute/disks",
-              "apiVersion": "2023-04-02",
+              "apiVersion": "2024-03-02",
               "name": "[format('{0}-VMsDisk', parameters('vmName'))]",
               "location": "[parameters('location')]",
               "sku": {
@@ -411,7 +411,7 @@
             },
             {
               "type": "Microsoft.Compute/virtualMachines/extensions",
-              "apiVersion": "2022-03-01",
+              "apiVersion": "2024-07-01",
               "name": "[format('{0}/{1}', parameters('vmName'), 'Bootstrap')]",
               "location": "[parameters('location')]",
               "tags": {
@@ -436,10 +436,10 @@
             {
               "type": "Microsoft.Authorization/roleAssignments",
               "apiVersion": "2022-04-01",
-              "name": "[guid(resourceId('Microsoft.Compute/virtualMachines', parameters('vmName')), 'Microsoft.Authorization/roleAssignments', 'Owner')]",
+              "name": "[guid(resourceId('Microsoft.Compute/virtualMachines', parameters('vmName')), 'Microsoft.Authorization/roleAssignments', 'Contributor')]",
               "properties": {
-                "principalId": "[reference(resourceId('Microsoft.Compute/virtualMachines', parameters('vmName')), '2022-03-01', 'full').identity.principalId]",
-                "roleDefinitionId": "[resourceId('Microsoft.Authorization/roleDefinitions', '8e3af657-a8ff-443c-a75c-2fe8c4bcb635')]"
+                "principalId": "[reference(resourceId('Microsoft.Compute/virtualMachines', parameters('vmName')), '2024-07-01', 'full').identity.principalId]",
+                "roleDefinitionId": "[resourceId('Microsoft.Authorization/roleDefinitions', 'b24988ac-6180-42a0-ab88-20f7382dd24c')]"
               },
               "dependsOn": [
                 "[resourceId('Microsoft.Compute/virtualMachines', parameters('vmName'))]"
@@ -453,7 +453,7 @@
             },
             "publicIP": {
               "type": "string",
-              "value": "[if(equals(parameters('deployBastion'), false()), concat(reference(resourceId('Microsoft.Network/publicIPAddresses', variables('publicIpAddressName')), '2022-01-01').ipAddress), '')]"
+              "value": "[if(equals(parameters('deployBastion'), false()), concat(reference(resourceId('Microsoft.Network/publicIPAddresses', variables('publicIpAddressName')), '2024-05-01').ipAddress), '')]"
             }
           }
         }
@@ -485,7 +485,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.32.4.45862",
-              "templateHash": "730530218300051233"
+              "templateHash": "18278273955685910822"
             }
           },
           "parameters": {
@@ -516,7 +516,7 @@
           "resources": [
             {
               "type": "Microsoft.Storage/storageAccounts",
-              "apiVersion": "2022-05-01",
+              "apiVersion": "2023-05-01",
               "name": "[variables('storageAccountName')]",
               "location": "[parameters('location')]",
               "sku": {
@@ -564,7 +564,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.32.4.45862",
-              "templateHash": "2819501567096576880"
+              "templateHash": "14814323776187584418"
             }
           },
           "parameters": {
@@ -664,7 +664,7 @@
           "resources": [
             {
               "type": "Microsoft.Network/virtualNetworks",
-              "apiVersion": "2022-01-01",
+              "apiVersion": "2024-05-01",
               "name": "[parameters('virtualNetworkName')]",
               "location": "[parameters('location')]",
               "properties": {
@@ -682,14 +682,14 @@
             },
             {
               "type": "Microsoft.Network/networkSecurityGroups",
-              "apiVersion": "2022-01-01",
+              "apiVersion": "2024-05-01",
               "name": "[parameters('networkSecurityGroupName')]",
               "location": "[parameters('location')]"
             },
             {
               "condition": "[equals(parameters('deployBastion'), true())]",
               "type": "Microsoft.Network/networkSecurityGroups",
-              "apiVersion": "2022-01-01",
+              "apiVersion": "2024-05-01",
               "name": "[parameters('bastionNetworkSecurityGroupName')]",
               "location": "[parameters('location')]",
               "properties": {
@@ -815,7 +815,7 @@
             },
             {
               "type": "Microsoft.OperationalInsights/workspaces",
-              "apiVersion": "2021-06-01",
+              "apiVersion": "2023-09-01",
               "name": "[parameters('workspaceName')]",
               "location": "[parameters('location')]",
               "properties": {
@@ -855,7 +855,7 @@
             {
               "condition": "[equals(parameters('deployBastion'), true())]",
               "type": "Microsoft.Network/publicIPAddresses",
-              "apiVersion": "2022-01-01",
+              "apiVersion": "2024-05-01",
               "name": "[variables('bastionPublicIpAddressName')]",
               "location": "[parameters('location')]",
               "properties": {
@@ -870,7 +870,7 @@
             {
               "condition": "[equals(parameters('deployBastion'), true())]",
               "type": "Microsoft.Network/bastionHosts",
-              "apiVersion": "2022-01-01",
+              "apiVersion": "2024-05-01",
               "name": "[variables('bastionName')]",
               "location": "[parameters('location')]",
               "properties": {
@@ -901,7 +901,7 @@
             },
             "subnetId": {
               "type": "string",
-              "value": "[reference(resourceId('Microsoft.Network/virtualNetworks', parameters('virtualNetworkName')), '2022-01-01').subnets[0].id]"
+              "value": "[reference(resourceId('Microsoft.Network/virtualNetworks', parameters('virtualNetworkName')), '2024-05-01').subnets[0].id]"
             },
             "workspaceId": {
               "type": "string",
@@ -4541,7 +4541,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.32.4.45862",
-              "templateHash": "8452320223296012534"
+              "templateHash": "11080826907948722772"
             }
           },
           "parameters": {
@@ -4615,7 +4615,7 @@
           "resources": [
             {
               "type": "Microsoft.Authorization/policyAssignments",
-              "apiVersion": "2022-06-01",
+              "apiVersion": "2025-03-01",
               "name": "(ArcBox) Tag resources",
               "location": "[parameters('azureLocation')]",
               "identity": {
@@ -4637,7 +4637,7 @@
             },
             {
               "type": "Microsoft.Authorization/policyAssignments",
-              "apiVersion": "2022-06-01",
+              "apiVersion": "2025-03-01",
               "name": "(ArcBox) Enable ChangeTracking for Arc-enabled machines",
               "location": "[parameters('azureLocation')]",
               "identity": {
@@ -4664,7 +4664,7 @@
               "properties": {
                 "principalType": "ServicePrincipal",
                 "roleDefinitionId": "[parameters('connectedMachineResourceAdminRole')]",
-                "principalId": "[reference(resourceId('Microsoft.Authorization/policyAssignments', '(ArcBox) Enable ChangeTracking for Arc-enabled machines'), '2022-06-01', 'full').identity.principalId]"
+                "principalId": "[reference(resourceId('Microsoft.Authorization/policyAssignments', '(ArcBox) Enable ChangeTracking for Arc-enabled machines'), '2025-03-01', 'full').identity.principalId]"
               },
               "dependsOn": [
                 "[resourceId('Microsoft.Authorization/policyAssignments', '(ArcBox) Enable ChangeTracking for Arc-enabled machines')]"
@@ -4677,7 +4677,7 @@
               "properties": {
                 "principalType": "ServicePrincipal",
                 "roleDefinitionId": "[parameters('logAnalyticsContributor')]",
-                "principalId": "[reference(resourceId('Microsoft.Authorization/policyAssignments', '(ArcBox) Enable ChangeTracking for Arc-enabled machines'), '2022-06-01', 'full').identity.principalId]"
+                "principalId": "[reference(resourceId('Microsoft.Authorization/policyAssignments', '(ArcBox) Enable ChangeTracking for Arc-enabled machines'), '2025-03-01', 'full').identity.principalId]"
               },
               "dependsOn": [
                 "[resourceId('Microsoft.Authorization/policyAssignments', '(ArcBox) Enable ChangeTracking for Arc-enabled machines')]"
@@ -4690,7 +4690,7 @@
               "properties": {
                 "principalType": "ServicePrincipal",
                 "roleDefinitionId": "[parameters('monitoringContributorRole')]",
-                "principalId": "[reference(resourceId('Microsoft.Authorization/policyAssignments', '(ArcBox) Enable ChangeTracking for Arc-enabled machines'), '2022-06-01', 'full').identity.principalId]"
+                "principalId": "[reference(resourceId('Microsoft.Authorization/policyAssignments', '(ArcBox) Enable ChangeTracking for Arc-enabled machines'), '2025-03-01', 'full').identity.principalId]"
               },
               "dependsOn": [
                 "[resourceId('Microsoft.Authorization/policyAssignments', '(ArcBox) Enable ChangeTracking for Arc-enabled machines')]"
@@ -4698,11 +4698,11 @@
             },
             {
               "type": "Microsoft.Authorization/roleAssignments",
-              "apiVersion": "2020-10-01-preview",
+              "apiVersion": "2022-04-01",
               "name": "[guid('(ArcBox) Tag resources', variables('policies')[0].roleDefinition, resourceGroup().id)]",
               "properties": {
                 "roleDefinitionId": "[parameters('contributorRoleDefinition')]",
-                "principalId": "[reference(resourceId('Microsoft.Authorization/policyAssignments', '(ArcBox) Tag resources'), '2022-06-01', 'full').identity.principalId]",
+                "principalId": "[reference(resourceId('Microsoft.Authorization/policyAssignments', '(ArcBox) Tag resources'), '2025-03-01', 'full').identity.principalId]",
                 "principalType": "ServicePrincipal"
               },
               "dependsOn": [
