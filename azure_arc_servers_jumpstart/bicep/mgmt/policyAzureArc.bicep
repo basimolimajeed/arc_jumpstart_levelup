@@ -59,7 +59,7 @@ var policies = [
 ]
 
 
-resource taggingPolicyAssignment 'Microsoft.Authorization/policyAssignments@2025-03-01' = {
+resource taggingPolicyAssignment 'Microsoft.Authorization/policyAssignments@2025-01-01' = {
   name: '(ArcBox) Tag resources'
   location: azureLocation
   scope: resourceGroup()
