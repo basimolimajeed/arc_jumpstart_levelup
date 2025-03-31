@@ -81,7 +81,7 @@ resource taggingPolicyAssignment 'Microsoft.Authorization/policyAssignments@2025
   }
 }
 
-/*resource policies_name 'Microsoft.Authorization/policyAssignments@2025-03-01' = [for item in policies: {
+/*resource policies_name 'Microsoft.Authorization/policyAssignments@2025-01-01' = [for item in policies: {
   name: item.name
   location: azureLocation
   identity: {
@@ -99,7 +99,7 @@ module arcAMAPolicies 'policySetDefinitionsAzureArc.bicep' = {
   scope: subscription(subscriptionId)
 }
 
-resource changeTrackingPolicyAssignemnt 'Microsoft.Authorization/policyAssignments@2025-03-01' = {
+resource changeTrackingPolicyAssignemnt 'Microsoft.Authorization/policyAssignments@2025-01-01' = {
   name: '(ArcBox) Enable ChangeTracking for Arc-enabled machines'
   dependsOn: [
     arcAMAPolicies

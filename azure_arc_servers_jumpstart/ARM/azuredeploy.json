@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.34.44.8038",
-      "templateHash": "6037139106731507636"
+      "templateHash": "3898163542391327107"
     }
   },
   "parameters": {
@@ -4541,7 +4541,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.34.44.8038",
-              "templateHash": "580252837855873907"
+              "templateHash": "16568334216038501167"
             }
           },
           "parameters": {
@@ -4637,7 +4637,7 @@
             },
             {
               "type": "Microsoft.Authorization/policyAssignments",
-              "apiVersion": "2025-03-01",
+              "apiVersion": "2025-01-01",
               "name": "(ArcBox) Enable ChangeTracking for Arc-enabled machines",
               "location": "[parameters('azureLocation')]",
               "identity": {
@@ -4664,7 +4664,7 @@
               "properties": {
                 "principalType": "ServicePrincipal",
                 "roleDefinitionId": "[parameters('connectedMachineResourceAdminRole')]",
-                "principalId": "[reference(resourceId('Microsoft.Authorization/policyAssignments', '(ArcBox) Enable ChangeTracking for Arc-enabled machines'), '2025-03-01', 'full').identity.principalId]"
+                "principalId": "[reference(resourceId('Microsoft.Authorization/policyAssignments', '(ArcBox) Enable ChangeTracking for Arc-enabled machines'), '2025-01-01', 'full').identity.principalId]"
               },
               "dependsOn": [
                 "[resourceId('Microsoft.Authorization/policyAssignments', '(ArcBox) Enable ChangeTracking for Arc-enabled machines')]"
@@ -4677,7 +4677,7 @@
               "properties": {
                 "principalType": "ServicePrincipal",
                 "roleDefinitionId": "[parameters('logAnalyticsContributor')]",
-                "principalId": "[reference(resourceId('Microsoft.Authorization/policyAssignments', '(ArcBox) Enable ChangeTracking for Arc-enabled machines'), '2025-03-01', 'full').identity.principalId]"
+                "principalId": "[reference(resourceId('Microsoft.Authorization/policyAssignments', '(ArcBox) Enable ChangeTracking for Arc-enabled machines'), '2025-01-01', 'full').identity.principalId]"
               },
               "dependsOn": [
                 "[resourceId('Microsoft.Authorization/policyAssignments', '(ArcBox) Enable ChangeTracking for Arc-enabled machines')]"
@@ -4690,7 +4690,7 @@
               "properties": {
                 "principalType": "ServicePrincipal",
                 "roleDefinitionId": "[parameters('monitoringContributorRole')]",
-                "principalId": "[reference(resourceId('Microsoft.Authorization/policyAssignments', '(ArcBox) Enable ChangeTracking for Arc-enabled machines'), '2025-03-01', 'full').identity.principalId]"
+                "principalId": "[reference(resourceId('Microsoft.Authorization/policyAssignments', '(ArcBox) Enable ChangeTracking for Arc-enabled machines'), '2025-01-01', 'full').identity.principalId]"
               },
               "dependsOn": [
                 "[resourceId('Microsoft.Authorization/policyAssignments', '(ArcBox) Enable ChangeTracking for Arc-enabled machines')]"
