@@ -2,7 +2,7 @@ $ErrorActionPreference = $env:ErrorActionPreference
 
 $Env:ArcBoxDir = 'C:\ArcBox'
 $Env:ArcBoxLogsDir = "$Env:ArcBoxDir\Logs"
-$tenantId = $env:tenantId
+$tenantId = $env:spnTenantId
 $subscriptionId = $env:subscriptionId
 $resourceGroup = $env:resourceGroup
 
